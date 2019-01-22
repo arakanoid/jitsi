@@ -20,6 +20,7 @@ package net.java.sip.communicator.impl.neomedia;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -32,6 +33,11 @@ import org.jitsi.service.configuration.*;
 import org.jitsi.service.neomedia.recording.*;
 import org.jitsi.service.resources.*;
 import org.jitsi.util.*;
+import org.json.simple.*;
+import org.json.simple.parser.*;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
 
 /**
  * The saved calls management and configuration form.
@@ -74,6 +80,7 @@ public class CallRecordingConfigForm
     private final SipCommFileChooser dirChooser;
     private JComboBox formatsComboBox;
     private JCheckBox saveCallsToCheckBox;
+    private JCheckBox saveCallsAutomaticCheckBox;
     /**
      * Directory where calls are stored. Default is SC_HOME/calls.
      */
@@ -147,6 +154,11 @@ public class CallRecordingConfigForm
         {
             File newDir = new File(callDirTextField.getText());
             changeCallsDir(newDir, true);
+        }
+        else if (source == saveCallsAutomaticCheckBox)
+        {
+            boolean selected = saveCallsAutomaticCheckBox.isSelected();
+            //here we save in config json file
         }
     }
 
@@ -224,7 +236,7 @@ public class CallRecordingConfigForm
     private void initComponents()
     {
         // labels panel
-        JPanel labelsPanel = new TransparentPanel(new GridLayout(2, 1));
+        JPanel labelsPanel = new TransparentPanel(new GridLayout(3, 1));
         JLabel formatsLabel
             = new JLabel(
                     resources.getI18NString(
@@ -235,9 +247,15 @@ public class CallRecordingConfigForm
                     resources.getI18NString(
                             "plugin.callrecordingconfig.SAVE_CALLS"));
         saveCallsToCheckBox.addActionListener(this);
+        
+        saveCallsAutomaticCheckBox
+            = new SIPCommCheckBox(
+            resources.getI18NString(
+                    "plugin.jabberaccregwizz.AUTORESOURCE"));
 
         labelsPanel.add(formatsLabel);
         labelsPanel.add(saveCallsToCheckBox);
+        labelsPanel.add(saveCallsAutomaticCheckBox);
 
         // saved calls directory panel
         JPanel callDirPanel = new TransparentPanel(new BorderLayout());
@@ -256,7 +274,7 @@ public class CallRecordingConfigForm
         callDirPanel.add(callDirChooseButton, BorderLayout.EAST);
 
         // values panel
-        JPanel valuesPanel = new TransparentPanel(new GridLayout(2, 1));
+        JPanel valuesPanel = new TransparentPanel(new GridLayout(3, 1));
 
         valuesPanel.add(createFormatsComboBox());
         valuesPanel.add(callDirPanel);
@@ -304,6 +322,24 @@ public class CallRecordingConfigForm
         callDirTextField.setEnabled(saveCallsToCheckBox.isSelected());
         callDirTextField.getDocument().addDocumentListener(this);
         callDirChooseButton.setEnabled(saveCallsToCheckBox.isSelected());
+        
+        //Here we read values from json file
+        try
+        {
+            String configPath = "C:\\Users\\pier\\git\\jitsi\\src\\itaca\\solution\\utils\\config.json";
+            Object obj = new JSONParser().parse(new FileReader(configPath)); 
+            JSONObject jo = (JSONObject) obj;         
+            Boolean autoRecording = (Boolean) jo.get("auto_recording"); 
+            Map ftp = ((Map)jo.get("ftp"));
+            String ftp_user = (String) ftp.get("user");
+            String ftp_password = (String) ftp.get("password");
+            String ftp_url = (String) ftp.get("url");
+            String ftp_directory = (String) ftp.get("directory");
+        }        
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }       
     }
 
     /**
@@ -319,4 +355,124 @@ public class CallRecordingConfigForm
         if(insertedFile.exists())
             changeCallsDir(insertedFile, false);
     }
+}
+
+class Itaca_ConfigEditor implements BundleActivator
+{
+    private static BundleContext context;
+    
+    private String CONFIG_FILE = "C:\\Users\\pier\\Desktop\\config.json";
+    private Boolean autoRecording;
+    private String ftp_user;
+    private String ftp_password;
+    private String ftp_url;
+    private String ftp_directory;
+    
+    public void start(BundleContext ctx) {
+        context = ctx;
+        System.out.println("Hello world.");
+    }
+    public void stop(BundleContext bundleContext) {
+        context = null;
+        System.out.println("Goodbye world.");
+    }
+    
+    public Itaca_ConfigEditor()
+    {
+        super();
+        try
+        {
+            Object obj = new JSONParser().parse(new FileReader(CONFIG_FILE)); 
+            JSONObject jo = (JSONObject) obj;         
+            autoRecording = (Boolean) jo.get("auto_recording"); 
+            Map ftp = ((Map)jo.get("ftp"));
+            ftp_user = (String) ftp.get("user");
+            ftp_password = (String) ftp.get("password");
+            ftp_url = (String) ftp.get("url");
+            ftp_directory = (String) ftp.get("directory");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }        
+    }
+
+    public Boolean getAutoRecording()
+    {
+        return autoRecording;
+    }
+
+    public void setAutoRecording(Boolean autoRecording)
+    {
+        this.autoRecording = autoRecording;
+        saveJson();
+    }
+
+    public String getFtp_user()
+    {
+        return ftp_user;
+    }
+
+    public void setFtp_user(String ftp_user)
+    {
+        this.ftp_user = ftp_user;
+        saveJson();
+    }
+
+    public String getFtp_password()
+    {
+        return ftp_password;
+    }
+
+    public void setFtp_password(String ftp_password)
+    {
+        this.ftp_password = ftp_password;
+        saveJson();
+    }
+
+    public String getFtp_url()
+    {
+        return ftp_url;
+    }
+
+    public void setFtp_url(String ftp_url)
+    {
+        this.ftp_url = ftp_url;
+        saveJson();
+    }
+
+    public String getFtp_directory()
+    {
+        return ftp_directory;
+    }
+
+    public void setFtp_directory(String ftp_directory)
+    {
+        this.ftp_directory = ftp_directory;
+        saveJson();
+    }
+    
+    private void saveJson() {
+        try
+        {
+            FileWriter file = new FileWriter(CONFIG_FILE);
+            JSONObject obj = new JSONObject();
+            obj.put("auto_recording", autoRecording);
+     
+            JSONObject ftp = new JSONObject();
+            ftp.put("user", ftp_user);
+            ftp.put("password", ftp_password);
+            ftp.put("url", ftp_url);
+            ftp.put("directory", ftp_directory);
+            obj.put("ftp", ftp);
+            
+            file.write(obj.toJSONString());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        
+    }
+    
+    
 }
