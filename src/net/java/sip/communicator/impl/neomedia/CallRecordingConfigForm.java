@@ -326,7 +326,7 @@ public class CallRecordingConfigForm
         //Here we read values from json file
         try
         {
-            String configPath = "C:\\Users\\pier\\git\\jitsi\\src\\itaca\\solution\\utils\\config.json";
+            String configPath = "C:\\Users\\pier\\Desktop\\config.json";
             Object obj = new JSONParser().parse(new FileReader(configPath)); 
             JSONObject jo = (JSONObject) obj;         
             Boolean autoRecording = (Boolean) jo.get("auto_recording"); 

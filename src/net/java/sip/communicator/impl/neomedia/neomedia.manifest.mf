@@ -75,4 +75,4 @@ Import-Package: apple.awt,
  quicktime.qd,
  quicktime.std.image,
  quicktime.std.sg,
- quicktime.util
+ quicktime.util, org.json.simple.parser
