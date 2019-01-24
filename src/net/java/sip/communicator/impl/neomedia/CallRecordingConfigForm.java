@@ -158,7 +158,10 @@ public class CallRecordingConfigForm
         else if (source == saveCallsAutomaticCheckBox)
         {
             boolean selected = saveCallsAutomaticCheckBox.isSelected();
-            //here we save in config json file
+            
+            //Itaca
+            Itaca_ConfigEditor itacaConfigEditor = new Itaca_ConfigEditor();
+            itacaConfigEditor.setAutoRecording(selected);
         }
     }
 
@@ -252,6 +255,7 @@ public class CallRecordingConfigForm
             = new SIPCommCheckBox(
             resources.getI18NString(
                     "plugin.jabberaccregwizz.AUTORESOURCE"));
+        saveCallsAutomaticCheckBox.addActionListener(this);
 
         labelsPanel.add(formatsLabel);
         labelsPanel.add(saveCallsToCheckBox);
@@ -323,23 +327,9 @@ public class CallRecordingConfigForm
         callDirTextField.getDocument().addDocumentListener(this);
         callDirChooseButton.setEnabled(saveCallsToCheckBox.isSelected());
         
-        //Here we read values from json file
-        try
-        {
-            String configPath = "C:\\Users\\pier\\Desktop\\config.json";
-            Object obj = new JSONParser().parse(new FileReader(configPath)); 
-            JSONObject jo = (JSONObject) obj;         
-            Boolean autoRecording = (Boolean) jo.get("auto_recording"); 
-            Map ftp = ((Map)jo.get("ftp"));
-            String ftp_user = (String) ftp.get("user");
-            String ftp_password = (String) ftp.get("password");
-            String ftp_url = (String) ftp.get("url");
-            String ftp_directory = (String) ftp.get("directory");
-        }        
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }       
+        //Itaca
+        Itaca_ConfigEditor itacaConfigEditor = new Itaca_ConfigEditor();
+        saveCallsAutomaticCheckBox.setSelected(itacaConfigEditor.getAutoRecording());
     }
 
     /**
@@ -466,6 +456,7 @@ class Itaca_ConfigEditor implements BundleActivator
             obj.put("ftp", ftp);
             
             file.write(obj.toJSONString());
+            file.close();
         }
         catch (IOException e)
         {
