@@ -17,41 +17,61 @@
  */
 package net.java.sip.communicator.impl.gui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
-import net.java.sip.communicator.impl.gui.main.account.*;
-import net.java.sip.communicator.impl.gui.main.contactlist.*;
-import net.java.sip.communicator.impl.gui.utils.*;
-import net.java.sip.communicator.service.browserlauncher.*;
-import net.java.sip.communicator.service.callhistory.*;
-import net.java.sip.communicator.service.contactlist.*;
-import net.java.sip.communicator.service.contactsource.*;
-import net.java.sip.communicator.service.credentialsstorage.*;
-import net.java.sip.communicator.service.desktop.*;
-import net.java.sip.communicator.service.globaldisplaydetails.*;
-import net.java.sip.communicator.service.gui.*;
-import net.java.sip.communicator.service.keybindings.*;
-import net.java.sip.communicator.service.metahistory.*;
-import net.java.sip.communicator.service.msghistory.*;
-import net.java.sip.communicator.service.muc.*;
-import net.java.sip.communicator.service.notification.*;
-import net.java.sip.communicator.service.protocol.*;
-import net.java.sip.communicator.service.protocol.globalstatus.*;
-import net.java.sip.communicator.service.replacement.*;
-import net.java.sip.communicator.service.replacement.directimage.*;
-import net.java.sip.communicator.service.replacement.smilies.*;
-import net.java.sip.communicator.service.shutdown.*;
-import net.java.sip.communicator.service.systray.*;
-import net.java.sip.communicator.util.*;
+import org.jitsi.service.audionotifier.AudioNotifierService;
+import org.jitsi.service.configuration.ConfigurationService;
+import org.jitsi.service.fileaccess.FileAccessService;
+import org.jitsi.service.neomedia.MediaService;
+import org.jitsi.service.resources.ResourceManagementService;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
-import org.jitsi.service.audionotifier.*;
-import org.jitsi.service.configuration.*;
-import org.jitsi.service.fileaccess.*;
-import org.jitsi.service.neomedia.*;
-import org.jitsi.service.resources.*;
-import org.osgi.framework.*;
+import net.java.sip.communicator.impl.gui.main.account.Account;
+import net.java.sip.communicator.impl.gui.main.contactlist.TreeContactList;
+import net.java.sip.communicator.impl.gui.utils.ImageLoaderServiceImpl;
+import net.java.sip.communicator.service.browserlauncher.BrowserLauncherService;
+import net.java.sip.communicator.service.callhistory.CallHistoryService;
+import net.java.sip.communicator.service.contactlist.MetaContactListService;
+import net.java.sip.communicator.service.contactsource.ContactSourceService;
+import net.java.sip.communicator.service.contactsource.DemuxContactSourceService;
+import net.java.sip.communicator.service.credentialsstorage.CredentialsStorageService;
+import net.java.sip.communicator.service.desktop.DesktopService;
+import net.java.sip.communicator.service.globaldisplaydetails.GlobalDisplayDetailsService;
+import net.java.sip.communicator.service.gui.AccountRegistrationWizard;
+import net.java.sip.communicator.service.gui.AlertUIService;
+import net.java.sip.communicator.service.gui.ImageLoaderService;
+import net.java.sip.communicator.service.gui.UIService;
+import net.java.sip.communicator.service.keybindings.KeybindingsService;
+import net.java.sip.communicator.service.metahistory.MetaHistoryService;
+import net.java.sip.communicator.service.msghistory.MessageHistoryService;
+import net.java.sip.communicator.service.muc.MUCService;
+import net.java.sip.communicator.service.notification.NotificationService;
+import net.java.sip.communicator.service.protocol.AccountID;
+import net.java.sip.communicator.service.protocol.AccountManager;
+import net.java.sip.communicator.service.protocol.PhoneNumberI18nService;
+import net.java.sip.communicator.service.protocol.ProtocolProviderFactory;
+import net.java.sip.communicator.service.protocol.ProtocolProviderService;
+import net.java.sip.communicator.service.protocol.SecurityAuthority;
+import net.java.sip.communicator.service.protocol.globalstatus.GlobalStatusService;
+import net.java.sip.communicator.service.replacement.ReplacementService;
+import net.java.sip.communicator.service.replacement.directimage.DirectImageReplacementService;
+import net.java.sip.communicator.service.replacement.smilies.SmiliesReplacementService;
+import net.java.sip.communicator.service.shutdown.ShutdownService;
+import net.java.sip.communicator.service.systray.SystrayService;
+import net.java.sip.communicator.util.ConfigurationUtils;
+import net.java.sip.communicator.util.Logger;
+import net.java.sip.communicator.util.ServiceUtils;
 
 /**
  * The GUI Activator class.

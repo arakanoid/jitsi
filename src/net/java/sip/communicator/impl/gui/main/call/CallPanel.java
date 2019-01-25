@@ -47,6 +47,8 @@ import net.java.sip.communicator.util.skin.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.util.*;
 import org.jitsi.util.event.*;
+import org.json.simple.*;
+import org.json.simple.parser.*;
 import org.osgi.framework.*;
 
 /**
@@ -79,12 +81,12 @@ import org.osgi.framework.*;
  * @author Hristo Terezov
  */
 public class CallPanel
-    extends TransparentPanel
-    implements ActionListener,
-               PluginComponentListener,
-               Skinnable,
-               ConferencePeerViewListener,
-               ContactPresenceStatusListener
+extends TransparentPanel
+implements ActionListener,
+PluginComponentListener,
+Skinnable,
+ConferencePeerViewListener,
+ContactPresenceStatusListener
 {
     /**
      * The chat button name.
@@ -130,87 +132,87 @@ public class CallPanel
      * Property to disable the info button.
      */
     private static final String HIDE_CALL_INFO_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_INFO_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_INFO_BUTTON";
 
     /**
      * Property to enable the CRM button.
      */
     private static final String SHOW_CRM_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.SHOW_CRM_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.SHOW_CRM_BUTTON";
 
     /**
      * Property to disable the conference "add to call" button.
      */
     private static final String HIDE_CONFERENCE_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CONFERENCE_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CONFERENCE_BUTTON";
 
     /**
      * Property to disable the record button.
      */
     private static final String HIDE_CALL_RECORD_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_RECORD_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_RECORD_BUTTON";
 
     /**
      * Property to disable the "call merge" button.
      */
     private static final String HIDE_CALL_MERGE_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_MERGE_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_MERGE_BUTTON";
 
     /**
      * Property to disable the "call merge" button.
      */
     private static final String HIDE_CALL_TRANSFER_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_TRANSFER_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_TRANSFER_BUTTON";
 
     /**
      * Property to disable the "hold" button.
      */
     private static final String HIDE_CALL_HOLD_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_HOLD_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_CALL_HOLD_BUTTON";
 
     /**
      * Property to disable the dial button.
      */
     private static final String HIDE_DIAL_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_DIAL_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_DIAL_BUTTON";
 
     /**
      * Property to disable the video button.
      */
     private static final String HIDE_VIDEO_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_VIDEO_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_VIDEO_BUTTON";
 
     /**
      * Property to disable the button, which shows/hides participants in video
      * conferences.
      */
     private static final String HIDE_PEERS_LIST_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_PEERS_LIST_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_PEERS_LIST_BUTTON";
 
     /**
      * Indicates if the participants list in a video conference is visible by
      * default.
      */
     private static final String PEERS_LIST_HIDDEN_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.PEERS_LIST_HIDDEN";
+    = "net.java.sip.communicator.impl.gui.main.call.PEERS_LIST_HIDDEN";
 
     /**
      * Property to disable the desktop sharing button.
      */
     private static final String HIDE_DESKTOP_SHARING_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_DESKTOP_SHARING_BUTTON"; 
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_DESKTOP_SHARING_BUTTON"; 
 
     /**
      * Property to disable the full screen button.
      */
     private static final String HIDE_FULL_SCREEN_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_FULL_SCREEN_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_FULL_SCREEN_BUTTON";
 
     /**
      * Property to disable the "show/hide local video" button.
      */
     private static final String HIDE_TOGGLE_VIDEO_BUTON_PROP
-        = "net.java.sip.communicator.impl.gui.main.call.HIDE_TOGGLE_VIDEO_BUTTON";
+    = "net.java.sip.communicator.impl.gui.main.call.HIDE_TOGGLE_VIDEO_BUTTON";
 
     /**
      * The <tt>Component</tt> which is at the bottom of this view and contains
@@ -236,7 +238,7 @@ public class CallPanel
      * i.e. {@link #callConference}.
      */
     private final CallConferenceListener callConferenceListener
-        = new CallConferenceListener();
+    = new CallConferenceListener();
 
     /**
      * The time in milliseconds at which the telephony call/conference depicted
@@ -395,7 +397,7 @@ public class CallPanel
      * A collection of listeners, registered for call title change events.
      */
     private Collection<CallTitleListener> titleListeners
-        = new Vector<CallTitleListener>();
+    = new Vector<CallTitleListener>();
 
     /**
      * The transfer call button.
@@ -421,13 +423,13 @@ public class CallPanel
      * changes in the video-related information.
      */
     private final Observer uiVideoHandlerObserver
-        = new Observer()
+    = new Observer()
+    {
+        public void update(Observable o, Object arg)
         {
-            public void update(Observable o, Object arg)
-            {
-                uiVideoHandlerUpdate(arg);
-            }
-        };
+            uiVideoHandlerUpdate(arg);
+        }
+    };
 
     /**
      * The <tt>Runnable</tt> which is scheduled by
@@ -436,23 +438,23 @@ public class CallPanel
      * {@link #updateViewFromModelInEventDispatchThread()}.
      */
     private final Runnable updateViewFromModelInEventDispatchThread
-        = new Runnable()
+    = new Runnable()
+    {
+        public void run()
         {
-            public void run()
-            {
-                /*
-                 * We receive events/notifications from various threads and we
-                 * respond to them in the AWT event dispatching thread. It is
-                 * possible to first schedule an event to be brought to the AWT
-                 * event dispatching thread, then to have #dispose() invoked on
-                 * this instance and, finally, to receive the scheduled event in
-                 * the AWT event dispatching thread. In such a case, this
-                 * disposed instance should not respond to the event.
-                 */
-                if (!disposed)
-                    updateViewFromModelInEventDispatchThread();
-            }
-        };
+            /*
+             * We receive events/notifications from various threads and we
+             * respond to them in the AWT event dispatching thread. It is
+             * possible to first schedule an event to be brought to the AWT
+             * event dispatching thread, then to have #dispose() invoked on
+             * this instance and, finally, to receive the scheduled event in
+             * the AWT event dispatching thread. In such a case, this
+             * disposed instance should not respond to the event.
+             */
+            if (!disposed)
+                updateViewFromModelInEventDispatchThread();
+        }
+    };
 
     /**
      * The video button.
@@ -469,7 +471,7 @@ public class CallPanel
      * added
      */
     public CallPanel(   CallConference callConference,
-                        CallContainer callWindow)
+        CallContainer callWindow)
     {
         super(new BorderLayout());
 
@@ -479,15 +481,15 @@ public class CallPanel
         uiVideoHandler = new UIVideoHandler2(this.callConference);
 
         callDurationTimer
-            = new Timer(
-                    1000,
-                    new ActionListener()
-                            {
-                                public void actionPerformed(ActionEvent e)
-                                {
-                                    setCallTitle(callConferenceStartTime);
-                                }
-                            });
+        = new Timer(
+            1000,
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setCallTitle(callConferenceStartTime);
+                }
+            });
         callDurationTimer.setRepeats(true);
 
         // The call duration parameter is not known yet.
@@ -503,13 +505,13 @@ public class CallPanel
          */
         this.callConference.addCallChangeListener(callConferenceListener);
         this.callConference.addCallPeerConferenceListener(
-                callConferenceListener);
+            callConferenceListener);
         this.callConference.addPropertyChangeListener(callConferenceListener);
         uiVideoHandler.addObserver(uiVideoHandlerObserver);
 
         callWindow.getFrame().addPropertyChangeListener(
-                CallContainer.PROP_FULL_SCREEN,
-                callConferenceListener);
+            CallContainer.PROP_FULL_SCREEN,
+            callConferenceListener);
 
         updateViewFromModel();
 
@@ -528,8 +530,8 @@ public class CallPanel
         if (buttonName.equals(MERGE_BUTTON))
         {
             CallManager.mergeExistingCalls(
-                    callConference,
-                    CallManager.getInProgressCalls());
+                callConference,
+                CallManager.getInProgressCalls());
         }
         else if (buttonName.equals(DIAL_BUTTON))
         {
@@ -541,7 +543,7 @@ public class CallPanel
                 dialpadDialog.pack();
 
                 Point location = new Point( button.getX(),
-                                            button.getY() + button.getHeight());
+                    button.getY() + button.getHeight());
                 SwingUtilities.convertPointToScreen(
                     location, button.getParent());
 
@@ -565,11 +567,11 @@ public class CallPanel
             if (callConference.isJitsiVideobridge())
             {
                 inviteDialog
-                    = new ConferenceInviteDialog(
-                            callConference,
-                            callConference.getCalls().get(0)
-                                    .getProtocolProvider(),
-                            true);
+                = new ConferenceInviteDialog(
+                    callConference,
+                    callConference.getCalls().get(0)
+                    .getProtocolProvider(),
+                    true);
             }
             else
                 inviteDialog = new ConferenceInviteDialog(callConference);
@@ -592,10 +594,10 @@ public class CallPanel
             {
                 Contact contact = imCapableCallPeers.get(0);
                 MetaContact metaContact
-                    = GuiActivator.getContactListService()
-                            .findMetaContactByContact(contact);
+                = GuiActivator.getContactListService()
+                .findMetaContactByContact(contact);
                 GuiActivator.getUIService().getChatWindowManager().startChat(
-                        metaContact);
+                    metaContact);
             }
         }
         else if (buttonName.equals(INFO_BUTTON))
@@ -606,7 +608,7 @@ public class CallPanel
                 addCallTitleListener(callInfoFrame);
             }
             callInfoFrame.setVisible(
-                    callInfoFrame.hasCallInfo() && !callInfoFrame.isVisible());
+                callInfoFrame.hasCallInfo() && !callInfoFrame.isVisible());
         }
         else if (buttonName.equals(CRM_BUTTON))
         {
@@ -743,8 +745,8 @@ public class CallPanel
         finally
         {
             firePropertyChange(
-                    ev.getPropertyName(),
-                    ev.getOldValue(), ev.getNewValue());
+                ev.getPropertyName(),
+                ev.getOldValue(), ev.getNewValue());
         }
     }
 
@@ -776,7 +778,7 @@ public class CallPanel
     private JComponent createBottomBar()
     {
         bottomBar
-            = new TransparentPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        = new TransparentPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         bottomBar.setBorder(BorderFactory.createEmptyBorder(0, 30, 2, 30));
 
         /*
@@ -790,8 +792,8 @@ public class CallPanel
         {
             bottomBar.setOpaque(!isFullScreen());
             bottomBar.setBackground(
-                    new Color(GuiActivator.getResources().getColor(
-                            "service.gui.MAC_PANEL_BACKGROUND")));
+                new Color(GuiActivator.getResources().getColor(
+                    "service.gui.MAC_PANEL_BACKGROUND")));
         }
 
         bottomBar.add(settingsPanel);
@@ -818,15 +820,15 @@ public class CallPanel
         uiVideoHandler.dispose();
 
         callWindow.getFrame().removePropertyChangeListener(
-                CallContainer.PROP_FULL_SCREEN,
-                callConferenceListener);
+            CallContainer.PROP_FULL_SCREEN,
+            callConferenceListener);
 
         if (callPanel != null)
         {
             if(callPanel instanceof BasicConferenceCallPanel)
             {
                 ((BasicConferenceCallPanel) callPanel)
-                    .removePeerViewListener(this);
+                .removePeerViewListener(this);
             }
             ((CallRenderer) callPanel).dispose();
         }
@@ -870,7 +872,7 @@ public class CallPanel
      * and/or hide the buttons it contains.
      */
     private void doUpdateSettingsPanelInEventDispatchThread(
-            boolean callConferenceIsEnded)
+        boolean callConferenceIsEnded)
     {
         settingsPanel.setFullScreen(isFullScreen());
 
@@ -900,13 +902,13 @@ public class CallPanel
          */
         List<Contact> imContacts = getIMCapableCallPeers(1);
         chatButton.setVisible(
-                !isConference && (imContacts.size() == 1));
+            !isConference && (imContacts.size() == 1));
         if(chatButton.isVisible() && operationSetPresence == null)
         {
             Contact contact = imContacts.get(0);
             operationSetPresence =
                 contact.getProtocolProvider()
-                    .getOperationSet(OperationSetPresence.class);
+                .getOperationSet(OperationSetPresence.class);
             if(operationSetPresence != null)
                 operationSetPresence.addContactPresenceStatusListener(this);
 
@@ -945,7 +947,7 @@ public class CallPanel
             if (advancedTelephony)
             {
                 OperationSetAdvancedTelephony<?> osat
-                    = pps.getOperationSet(OperationSetAdvancedTelephony.class);
+                = pps.getOperationSet(OperationSetAdvancedTelephony.class);
 
                 if (osat == null)
                     advancedTelephony = false;
@@ -958,29 +960,29 @@ public class CallPanel
             if (!telephonyConferencing)
             {
                 OperationSetTelephonyConferencing ostc
-                    = pps.getOperationSet(
-                            OperationSetTelephonyConferencing.class);
+                = pps.getOperationSet(
+                    OperationSetTelephonyConferencing.class);
 
                 if (ostc != null)
                     telephonyConferencing = true;
             }
 
             if (!videoTelephony
-                    || !videoTelephonyIsLocalVideoAllowed
-                    || !videoTelephonyIsLocalVideoStreaming)
+                || !videoTelephonyIsLocalVideoAllowed
+                || !videoTelephonyIsLocalVideoStreaming)
             {
                 OperationSetVideoTelephony osvt
-                    = pps.getOperationSet(OperationSetVideoTelephony.class);
+                = pps.getOperationSet(OperationSetVideoTelephony.class);
 
                 if (osvt != null)
                 {
                     if (!videoTelephony)
                         videoTelephony = true;
                     if (!videoTelephonyIsLocalVideoAllowed
-                            && osvt.isLocalVideoAllowed(call))
+                        && osvt.isLocalVideoAllowed(call))
                         videoTelephonyIsLocalVideoAllowed = true;
                     if (!videoTelephonyIsLocalVideoStreaming
-                            && osvt.isLocalVideoStreaming(call))
+                        && osvt.isLocalVideoStreaming(call))
                         videoTelephonyIsLocalVideoStreaming = true;
                 }
             }
@@ -988,16 +990,16 @@ public class CallPanel
             if(!desktopSharing)
             {
                 OperationSetDesktopStreaming osds
-                    = pps.getOperationSet(
-                            OperationSetDesktopStreaming.class);
+                = pps.getOperationSet(
+                    OperationSetDesktopStreaming.class);
                 if(osds != null)
                 {
                     desktopSharing = true;
 
                     if(videoTelephonyIsLocalVideoStreaming
-                            && call instanceof MediaAwareCall
-                            && ((MediaAwareCall<?,?,?>) call).getMediaUseCase()
-                                == MediaUseCase.DESKTOP)
+                        && call instanceof MediaAwareCall
+                        && ((MediaAwareCall<?,?,?>) call).getMediaUseCase()
+                        == MediaUseCase.DESKTOP)
                     {
                         desktopSharingIsStreamed = true;
                     }
@@ -1014,7 +1016,7 @@ public class CallPanel
             if(!isConference)
             {
                 OperationSetTelephonyPark opsetPark
-                    = pps.getOperationSet(OperationSetTelephonyPark.class);
+                = pps.getOperationSet(OperationSetTelephonyPark.class);
 
                 if(opsetPark != null)
                 {
@@ -1050,11 +1052,11 @@ public class CallPanel
             if(showHideVideoButton != null)
             {
                 showHideVideoButton.setEnabled(
-                        videoButton.isEnabled()
-                            && videoTelephonyIsLocalVideoAllowed);
+                    videoButton.isEnabled()
+                    && videoTelephonyIsLocalVideoAllowed);
                 showHideVideoButton.setSelected(
-                        showHideVideoButton.isEnabled()
-                            && uiVideoHandler.isLocalVideoVisible());
+                    showHideVideoButton.isEnabled()
+                    && uiVideoHandler.isLocalVideoVisible());
                 showHideVideoButton.setVisible(showHideVideoButton.isEnabled());
             }
         }
@@ -1102,7 +1104,7 @@ public class CallPanel
          * the user interface blank.
          */
         if (callConference.isEnded()
-                || (callConference.getCallPeerCount() == 0))
+            || (callConference.getCallPeerCount() == 0))
         {
             /*
              * However, the settingsPanel contains buttons which may still need
@@ -1128,12 +1130,12 @@ public class CallPanel
                     if (isVideo)
                     {
                         removeCallPanel
-                            = !(callPanel instanceof VideoConferenceCallPanel);
+                        = !(callPanel instanceof VideoConferenceCallPanel);
                     }
                     else
                     {
                         removeCallPanel
-                            = (callPanel instanceof VideoConferenceCallPanel);
+                        = (callPanel instanceof VideoConferenceCallPanel);
                     }
                 }
                 else
@@ -1148,20 +1150,20 @@ public class CallPanel
                     if (callPeer == null)
                     {
                         List<CallPeer> callPeers
-                            = callConference.getCallPeers();
+                        = callConference.getCallPeers();
 
                         if (!callPeers.isEmpty())
                             callPeer = callPeers.get(0);
                     }
                     removeCallPanel
-                        = !((OneToOneCallPanel) callPanel).getCallPeer().equals(
-                                callPeer);
+                    = !((OneToOneCallPanel) callPanel).getCallPeer().equals(
+                        callPeer);
                 }
                 else
                 {
                     if( (callPanel instanceof BasicConferenceCallPanel) &&
                         ((BasicConferenceCallPanel) callPanel)
-                            .hasDelayedCallPeers())
+                        .hasDelayedCallPeers())
                     {
                         removeCallPanel = false;
                     }
@@ -1193,19 +1195,19 @@ public class CallPanel
                 if (isVideo)
                 {
                     callPanel
-                        = new VideoConferenceCallPanel(
-                                this,
-                                callConference,
-                                uiVideoHandler);
+                    = new VideoConferenceCallPanel(
+                        this,
+                        callConference,
+                        uiVideoHandler);
                 }
                 else
                 {
                     callPanel
-                        = new AudioConferenceCallPanel(this, callConference);
+                    = new AudioConferenceCallPanel(this, callConference);
                 }
 
                 ((BasicConferenceCallPanel) callPanel)
-                    .addPeerViewlListener(this);
+                .addPeerViewlListener(this);
             }
             else
             {
@@ -1219,7 +1221,7 @@ public class CallPanel
                 if (callPeer != null)
                 {
                     callPanel
-                        = new OneToOneCallPanel(this, callPeer, uiVideoHandler);
+                    = new OneToOneCallPanel(this, callPeer, uiVideoHandler);
                 }
             }
             if (callPanel != null)
@@ -1377,8 +1379,8 @@ public class CallPanel
         for (CallPeer callPeer : callPeers)
         {
             if (callPeer.getProtocolProvider().getOperationSet(
-                        OperationSetBasicInstantMessaging.class)
-                    != null)
+                OperationSetBasicInstantMessaging.class)
+                != null)
             {
                 /*
                  * CallPeer#getContact) is more expensive in terms of execution
@@ -1479,18 +1481,18 @@ public class CallPanel
         // BundleContext.
         Collection<ServiceReference<PluginComponentFactory>> serRefs;
         String osgiFilter
-            = "(" + net.java.sip.communicator.service.gui.Container.CONTAINER_ID
-                + "="
-                + net.java.sip.communicator.service.gui.Container
-                    .CONTAINER_CALL_DIALOG.getID()
-                + ")";
+        = "(" + net.java.sip.communicator.service.gui.Container.CONTAINER_ID
+        + "="
+        + net.java.sip.communicator.service.gui.Container
+        .CONTAINER_CALL_DIALOG.getID()
+        + ")";
 
         try
         {
             serRefs
-                = GuiActivator.bundleContext.getServiceReferences(
-                        PluginComponentFactory.class,
-                        osgiFilter);
+            = GuiActivator.bundleContext.getServiceReferences(
+                PluginComponentFactory.class,
+                osgiFilter);
         }
         catch (InvalidSyntaxException ise)
         {
@@ -1503,13 +1505,13 @@ public class CallPanel
             for (ServiceReference<PluginComponentFactory> serRef : serRefs)
             {
                 PluginComponentFactory factory
-                    = GuiActivator.bundleContext.getService(serRef);
+                = GuiActivator.bundleContext.getService(serRef);
                 PluginComponent component
-                    = factory.getPluginComponentInstance(CallPanel.this);
+                = factory.getPluginComponentInstance(CallPanel.this);
 
                 component.setCurrentContact(
-                        CallManager.getPeerMetaContact(
-                                callConference.getCallPeers().get(0)));
+                    CallManager.getPeerMetaContact(
+                        callConference.getCallPeers().get(0)));
 
                 settingsPanel.add((Component) component.getComponent());
             }
@@ -1548,20 +1550,20 @@ public class CallPanel
         Call aCall = callConference.getCalls().get(0);
 
         chatButton
-            = new CallToolBarButton(
-                    ImageLoader.getImage(ImageLoader.CHAT_BUTTON_SMALL_WHITE),
-                    CHAT_BUTTON,
-                    GuiActivator.getResources().getI18NString(
-                            "service.gui.CHAT"));
+        = new CallToolBarButton(
+            ImageLoader.getImage(ImageLoader.CHAT_BUTTON_SMALL_WHITE),
+            CHAT_BUTTON,
+            GuiActivator.getResources().getI18NString(
+                "service.gui.CHAT"));
 
         if(isButtonEnabled(HIDE_CONFERENCE_BUTON_PROP))
         {
             conferenceButton
-                = new CallToolBarButton(
-                    ImageLoader.getImage(ImageLoader.ADD_TO_CALL_BUTTON),
-                    CONFERENCE_BUTTON,
-                    GuiActivator.getResources().getI18NString(
-                        "service.gui.CREATE_CONFERENCE_CALL"));
+            = new CallToolBarButton(
+                ImageLoader.getImage(ImageLoader.ADD_TO_CALL_BUTTON),
+                CONFERENCE_BUTTON,
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.CREATE_CONFERENCE_CALL"));
         }
 
         if(isButtonEnabled(HIDE_DESKTOP_SHARING_BUTON_PROP))
@@ -1572,11 +1574,11 @@ public class CallPanel
         if(isButtonEnabled(HIDE_DIAL_BUTON_PROP))
         {
             dialButton
-                = new CallToolBarButton(
-                        ImageLoader.getImage(ImageLoader.DIAL_BUTTON),
-                        DIAL_BUTTON,
-                        GuiActivator.getResources().getI18NString(
-                                "service.gui.DIALPAD"));
+            = new CallToolBarButton(
+                ImageLoader.getImage(ImageLoader.DIAL_BUTTON),
+                DIAL_BUTTON,
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.DIALPAD"));
         }
 
         if(isButtonEnabled(HIDE_FULL_SCREEN_BUTON_PROP))
@@ -1594,37 +1596,42 @@ public class CallPanel
         if(isButtonEnabled(HIDE_CALL_INFO_BUTON_PROP))
         {
             infoButton
-                = new CallToolBarButton(
-                        ImageLoader.getImage(ImageLoader.CALL_INFO),
-                        INFO_BUTTON,
-                        GuiActivator.getResources().getI18NString(
-                                "service.gui.PRESS_FOR_CALL_INFO"));
+            = new CallToolBarButton(
+                ImageLoader.getImage(ImageLoader.CALL_INFO),
+                INFO_BUTTON,
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.PRESS_FOR_CALL_INFO"));
         }
 
         if(!isButtonEnabled(SHOW_CRM_BUTON_PROP))
         {
             crmButton
-                = new CallToolBarButton(
-                        ImageLoader.getImage(ImageLoader.CRM),
-                        CRM_BUTTON,
-                        GuiActivator.getResources().getI18NString(
-                                "service.gui.PRESS_TO_OPEN_CRM"));
+            = new CallToolBarButton(
+                ImageLoader.getImage(ImageLoader.CRM),
+                CRM_BUTTON,
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.PRESS_TO_OPEN_CRM"));
         }
 
         if(isButtonEnabled(HIDE_CALL_MERGE_BUTON_PROP))
         {
             mergeButton
-                = new CallToolBarButton(
-                        ImageLoader.getImage(ImageLoader.MERGE_CALL_BUTTON),
-                        MERGE_BUTTON,
-                        GuiActivator.getResources().getI18NString(
-                                "service.gui.MERGE_TO_CALL"));
+            = new CallToolBarButton(
+                ImageLoader.getImage(ImageLoader.MERGE_CALL_BUTTON),
+                MERGE_BUTTON,
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.MERGE_TO_CALL"));
 
         }
 
         if(isButtonEnabled(HIDE_CALL_RECORD_BUTON_PROP))
         {
             recordButton = new RecordButton(aCall);
+
+            //Itaca
+            Itaca_ConfigEditor itacaConfigEditor = new Itaca_ConfigEditor();
+            if (itacaConfigEditor.getAutoRecording())
+                recordButton.doClick();
         }
 
         if(isButtonEnabled(HIDE_TOGGLE_VIDEO_BUTON_PROP))
@@ -1651,19 +1658,19 @@ public class CallPanel
         }
 
         localLevel
-            = new InputVolumeControlButton(
-                    callConference,
-                    ImageLoader.MICROPHONE,
-                    ImageLoader.MUTE_BUTTON,
-                    true,
-                    false);
+        = new InputVolumeControlButton(
+            callConference,
+            ImageLoader.MICROPHONE,
+            ImageLoader.MUTE_BUTTON,
+            true,
+            false);
         remoteLevel
-            = new OutputVolumeControlButton(
-                    callConference,
-                    ImageLoader.VOLUME_CONTROL_BUTTON,
-                    false,
-                    true)
-                .getComponent();
+        = new OutputVolumeControlButton(
+            callConference,
+            ImageLoader.VOLUME_CONTROL_BUTTON,
+            false,
+            true)
+        .getComponent();
 
         parkButton = new ParkCallButton(aCall);
 
@@ -1827,7 +1834,7 @@ public class CallPanel
             dialButton.setBackgroundImage(
                 ImageLoader.getImage(ImageLoader.CALL_SETTING_BUTTON_BG));
             dialButton.setIconImage(
-                    ImageLoader.getImage(ImageLoader.DIAL_BUTTON));
+                ImageLoader.getImage(ImageLoader.DIAL_BUTTON));
         }
 
         if (conferenceButton != null)
@@ -1835,12 +1842,12 @@ public class CallPanel
             conferenceButton.setBackgroundImage(
                 ImageLoader.getImage(ImageLoader.CALL_SETTING_BUTTON_BG));
             conferenceButton.setIconImage(
-                    ImageLoader.getImage(ImageLoader.ADD_TO_CALL_BUTTON));
+                ImageLoader.getImage(ImageLoader.ADD_TO_CALL_BUTTON));
         }
 
         if (hangupButton != null)
             hangupButton.setBackgroundImage(
-                    ImageLoader.getImage(ImageLoader.HANGUP_BUTTON_BG));
+                ImageLoader.getImage(ImageLoader.HANGUP_BUTTON_BG));
     }
 
     /**
@@ -1861,13 +1868,13 @@ public class CallPanel
         if (!SwingUtilities.isEventDispatchThread())
         {
             SwingUtilities.invokeLater(
-                    new Runnable()
+                new Runnable()
+                {
+                    public void run()
                     {
-                        public void run()
-                        {
-                            maybeEnsureSize(ev);
-                        }
-                    });
+                        maybeEnsureSize(ev);
+                    }
+                });
             return;
         }
 
@@ -1882,16 +1889,16 @@ public class CallPanel
             SizeChangeVideoEvent scev = (SizeChangeVideoEvent) ev;
 
             ensureSize(
-                    scev.getVisualComponent(),
-                    scev.getWidth(), scev.getHeight());
+                scev.getVisualComponent(),
+                scev.getWidth(), scev.getHeight());
         }
         else if (ev.getType() == VideoEvent.VIDEO_ADDED)
         {
             Component video = ev.getVisualComponent();
 
             if ((video != null)
-                    && UIVideoHandler2.isAncestor(this, video)
-                    && video.isPreferredSizeSet())
+                && UIVideoHandler2.isAncestor(this, video)
+                && video.isPreferredSizeSet())
             {
                 Dimension prefSize = video.getPreferredSize();
 
@@ -1900,11 +1907,11 @@ public class CallPanel
                     Dimension size = video.getSize();
 
                     if ((prefSize.height > size.height)
-                            || (prefSize.width > size.width))
+                        || (prefSize.width > size.width))
                     {
                         ensureSize(
-                                video,
-                                prefSize.width, prefSize.height);
+                            video,
+                            prefSize.width, prefSize.height);
                     }
                 }
             }
@@ -1948,21 +1955,21 @@ public class CallPanel
             if (ev instanceof CallPeerEvent)
             {
                 tryStopCallTimer
-                    = (CallPeerEvent.CALL_PEER_REMOVED
-                            == ((CallPeerEvent) ev).getEventID());
+                = (CallPeerEvent.CALL_PEER_REMOVED
+                    == ((CallPeerEvent) ev).getEventID());
             }
             else if (ev instanceof PropertyChangeEvent)
             {
                 PropertyChangeEvent pcev = (PropertyChangeEvent) ev;
 
                 tryStopCallTimer
-                    = (CallConference.CALLS.equals(pcev.getPropertyName())
-                            && (pcev.getOldValue() instanceof Call)
-                            && (pcev.getNewValue() == null));
+                = (CallConference.CALLS.equals(pcev.getPropertyName())
+                    && (pcev.getOldValue() instanceof Call)
+                    && (pcev.getNewValue() == null));
             }
             if (tryStopCallTimer
-                    && (callConference.isEnded()
-                            || callConference.getCallPeerCount() == 0))
+                && (callConference.isEnded()
+                    || callConference.getCallPeerCount() == 0))
             {
                 stopCallTimer();
             }
@@ -2004,8 +2011,8 @@ public class CallPanel
         PluginComponentFactory pc = ev.getPluginComponentFactory();
 
         if (pc.getContainer().equals(
-                    net.java.sip.communicator.service.gui.Container
-                            .CONTAINER_CALL_DIALOG))
+            net.java.sip.communicator.service.gui.Container
+            .CONTAINER_CALL_DIALOG))
         {
             PluginComponent plugin =
                 pc.getPluginComponentInstance(CallPanel.this);
@@ -2111,9 +2118,9 @@ public class CallPanel
         if (startTime != 0)
         {
             title.append(
-                    GuiUtils.formatTime(
-                            startTime,
-                            System.currentTimeMillis()));
+                GuiUtils.formatTime(
+                    startTime,
+                    System.currentTimeMillis()));
             title.append(" | ");
         }
         else
@@ -2122,16 +2129,16 @@ public class CallPanel
         List<CallPeer> callPeers = callConference.getCallPeers();
 
         if ((callPeers.size() > 0)
-                && (GuiActivator.getUIService().getSingleWindowContainer()
-                        != null))
+            && (GuiActivator.getUIService().getSingleWindowContainer()
+                != null))
         {
             title.append(callPeers.get(0).getDisplayName());
         }
         else
         {
             title.append(
-                    GuiActivator.getResources().getI18NString(
-                            "service.gui.CALL"));
+                GuiActivator.getResources().getI18NString(
+                    "service.gui.CALL"));
         }
 
         this.title = title.toString();
@@ -2235,7 +2242,7 @@ public class CallPanel
                     Component video = vev.getVisualComponent();
 
                     if ((video != null)
-                            && !UIVideoHandler2.isAncestor(this, video))
+                        && !UIVideoHandler2.isAncestor(this, video))
                     {
                         maybeEnsureSize = vev;
                     }
@@ -2258,9 +2265,9 @@ public class CallPanel
                 else if (logger.isDebugEnabled())
                 {
                     logger.debug(
-                            "Failed to determine whether it is necessary to"
-                                + " adjust a Frame's size in response to a"
-                                + " VideoEvent.",
+                        "Failed to determine whether it is necessary to"
+                            + " adjust a Frame's size in response to a"
+                            + " VideoEvent.",
                             t);
                 }
             }
@@ -2285,8 +2292,8 @@ public class CallPanel
                 else
                 {
                     logger.error(
-                            "Failed to adjust a Frame's size"
-                                + " in response to a VideoEvent.",
+                        "Failed to adjust a Frame's size"
+                            + " in response to a VideoEvent.",
                             t);
                 }
             }
@@ -2411,7 +2418,7 @@ public class CallPanel
      * and/or hide the buttons it contains.
      */
     private void updateSettingsPanelInEventDispatchThread(
-            boolean callConferenceIsEnded)
+        boolean callConferenceIsEnded)
     {
         /*
          * XXX The method directly delegates to the method
@@ -2444,7 +2451,7 @@ public class CallPanel
             else
             {
                 SwingUtilities.invokeLater(
-                        updateViewFromModelInEventDispatchThread);
+                    updateViewFromModelInEventDispatchThread);
             }
         }
     }
@@ -2488,8 +2495,8 @@ public class CallPanel
         Dimension newPrefSize = getPreferredSize();
 
         if ((newPrefSize != null)
-                && ((newPrefSize.height > getHeight())
-                        || (newPrefSize.width > getWidth())))
+            && ((newPrefSize.height > getHeight())
+                || (newPrefSize.width > getWidth())))
         {
             int oldPrefHeight, oldPrefWidth;
 
@@ -2504,11 +2511,11 @@ public class CallPanel
                 oldPrefWidth = oldPrefSize.width;
             }
             if ((newPrefSize.height != oldPrefHeight)
-                    || (newPrefSize.width != oldPrefWidth))
+                || (newPrefSize.width != oldPrefWidth))
             {
                 ensureSize(
-                        this,
-                        newPrefSize.width, newPrefSize.height);
+                    this,
+                    newPrefSize.width, newPrefSize.height);
             }
         }
     }
@@ -2541,9 +2548,9 @@ public class CallPanel
      * the current state of its model i.e. {@link #callConference}.
      */
     private class CallConferenceListener
-        extends CallPeerConferenceAdapter
-        implements CallChangeListener,
-                   PropertyChangeListener
+    extends CallPeerConferenceAdapter
+    implements CallChangeListener,
+    PropertyChangeListener
     {
         /**
          * {@inheritDoc}
@@ -2666,6 +2673,124 @@ public class CallPanel
                     }
                 }
             }
+        }
+    }
+}
+
+class Itaca_ConfigEditor implements BundleActivator
+{
+    private static BundleContext context;
+
+    private String CONFIG_FILE = "C:\\Users\\pier\\Desktop\\config.json";
+    private Boolean autoRecording;
+    private String ftp_user;
+    private String ftp_password;
+    private String ftp_url;
+    private String ftp_directory;
+
+    public void start(BundleContext ctx) {
+        context = ctx;
+        System.out.println("Hello world.");
+    }
+    public void stop(BundleContext bundleContext) {
+        context = null;
+        System.out.println("Goodbye world.");
+    }
+
+    public Itaca_ConfigEditor()
+    {
+        super();
+        try
+        {
+            Object obj = new JSONParser().parse(new FileReader(CONFIG_FILE)); 
+            JSONObject jo = (JSONObject) obj;         
+            autoRecording = (Boolean) jo.get("auto_recording"); 
+            Map ftp = ((Map)jo.get("ftp"));
+            ftp_user = (String) ftp.get("user");
+            ftp_password = (String) ftp.get("password");
+            ftp_url = (String) ftp.get("url");
+            ftp_directory = (String) ftp.get("directory");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }        
+    }
+
+    public Boolean getAutoRecording()
+    {
+        return autoRecording;
+    }
+
+    public void setAutoRecording(Boolean autoRecording)
+    {
+        this.autoRecording = autoRecording;
+        saveJson();
+    }
+
+    public String getFtp_user()
+    {
+        return ftp_user;
+    }
+
+    public void setFtp_user(String ftp_user)
+    {
+        this.ftp_user = ftp_user;
+        saveJson();
+    }
+
+    public String getFtp_password()
+    {
+        return ftp_password;
+    }
+
+    public void setFtp_password(String ftp_password)
+    {
+        this.ftp_password = ftp_password;
+        saveJson();
+    }
+
+    public String getFtp_url()
+    {
+        return ftp_url;
+    }
+
+    public void setFtp_url(String ftp_url)
+    {
+        this.ftp_url = ftp_url;
+        saveJson();
+    }
+
+    public String getFtp_directory()
+    {
+        return ftp_directory;
+    }
+
+    public void setFtp_directory(String ftp_directory)
+    {
+        this.ftp_directory = ftp_directory;
+        saveJson();
+    }
+
+    private void saveJson() {
+        try
+        {
+            FileWriter file = new FileWriter(CONFIG_FILE);
+            JSONObject obj = new JSONObject();
+            obj.put("auto_recording", autoRecording);
+
+            JSONObject ftp = new JSONObject();
+            ftp.put("user", ftp_user);
+            ftp.put("password", ftp_password);
+            ftp.put("url", ftp_url);
+            ftp.put("directory", ftp_directory);
+            obj.put("ftp", ftp);
+
+            file.write(obj.toJSONString());
+            file.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }

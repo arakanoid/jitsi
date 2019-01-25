@@ -2666,4 +2666,5 @@ javax.swing.event, javax.swing.border"/>
                 prefix="net/java/sip/communicator/plugin/propertieseditor"/>
 		</jar>
 	</target>
+	
 </project>
